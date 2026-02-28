@@ -54,55 +54,30 @@ if not is_mobile():
     # Desktop header menu
     st.markdown("""
     <div class='header-menu' style='display:flex;justify-content:center;align-items:center;margin-bottom:32px;'>
-        <a href='#' id='dashboard-link' style='margin:0 32px;font-weight:600;font-size:20px;color:#1a222b;text-decoration:none;'>🏠 Dashboard</a>
-        <a href='#' id='transactions-link' style='margin:0 32px;font-weight:600;font-size:20px;color:#1a222b;text-decoration:none;'>📄 Transactions</a>
-        <a href='#' id='archives-link' style='margin:0 32px;font-weight:600;font-size:20px;color:#1a222b;text-decoration:none;'>🗄️ Archives</a>
+        <a href='?tab=Dashboard' style='margin:0 32px;font-weight:600;font-size:20px;color:#1a222b;text-decoration:none;'>🏠 Dashboard</a>
+        <a href='?tab=Transactions' style='margin:0 32px;font-weight:600;font-size:20px;color:#1a222b;text-decoration:none;'>📄 Transactions</a>
+        <a href='?tab=Archives' style='margin:0 32px;font-weight:600;font-size:20px;color:#1a222b;text-decoration:none;'>🗄️ Archives</a>
     </div>
-    <script>
-    document.getElementById('dashboard-link').onclick = function() {
-        window.parent.postMessage({tab: 'Dashboard'}, '*');
-        window.location.hash = 'Dashboard';
-        return false;
-    };
-    document.getElementById('transactions-link').onclick = function() {
-        window.parent.postMessage({tab: 'Transactions'}, '*');
-        window.location.hash = 'Transactions';
-        return false;
-    };
-    document.getElementById('archives-link').onclick = function() {
-        window.parent.postMessage({tab: 'Archives'}, '*');
-        window.location.hash = 'Archives';
-        return false;
-    };
-    </script>
     """, unsafe_allow_html=True)
+    import streamlit as st
+    query_tab = st.experimental_get_query_params().get('tab', [None])[0]
+    if query_tab:
+        st.session_state.tab = query_tab
     if 'tab' not in st.session_state:
         st.session_state.tab = 'Dashboard'
-    # Listen for tab change events from JS
-    import streamlit.runtime.scriptrunner.script_run_context as stc
-    ctx = stc.get_script_run_ctx()
-    if ctx and hasattr(ctx, 'session_id'):
-        import streamlit.server.server as st_server
-        session_info = st_server.Server.get_current()._get_session_info(ctx.session_id)
-        if session_info and hasattr(session_info, 'request'): # Defensive
-            msg = session_info.request.get('msg', None)
-            if msg and 'tab' in msg:
-                st.session_state.tab = msg['tab']
     page = st.session_state.tab
 else:
     # Mobile sidebar menu
     st.sidebar.markdown("""
     <div class='mobile-sidebar-menu' style='background:#f4f7fa;border-radius:12px;padding:16px 0;margin-bottom:24px;'>
-        <a href='#' id='sidebar-dashboard-link' style='color:#00b2ff;font-weight:700;font-size:18px;text-decoration:none;display:block;padding:12px 0;'>🏠 Dashboard</a>
-        <a href='#' id='sidebar-transactions-link' style='color:#00b2ff;font-weight:700;font-size:18px;text-decoration:none;display:block;padding:12px 0;'>📄 Transactions</a>
-        <a href='#' id='sidebar-archives-link' style='color:#00b2ff;font-weight:700;font-size:18px;text-decoration:none;display:block;padding:12px 0;'>🗄️ Archives</a>
+        <a href='?tab=Dashboard' style='color:#00b2ff;font-weight:700;font-size:18px;text-decoration:none;display:block;padding:12px 0;'>🏠 Dashboard</a>
+        <a href='?tab=Transactions' style='color:#00b2ff;font-weight:700;font-size:18px;text-decoration:none;display:block;padding:12px 0;'>📄 Transactions</a>
+        <a href='?tab=Archives' style='color:#00b2ff;font-weight:700;font-size:18px;text-decoration:none;display:block;padding:12px 0;'>🗄️ Archives</a>
     </div>
-    <script>
-    document.getElementById('sidebar-dashboard-link').onclick = function() { window.parent.postMessage({tab: 'Dashboard'}, '*'); return false; };
-    document.getElementById('sidebar-transactions-link').onclick = function() { window.parent.postMessage({tab: 'Transactions'}, '*'); return false; };
-    document.getElementById('sidebar-archives-link').onclick = function() { window.parent.postMessage({tab: 'Archives'}, '*'); return false; };
-    </script>
     """, unsafe_allow_html=True)
+    query_tab = st.experimental_get_query_params().get('tab', [None])[0]
+    if query_tab:
+        st.session_state.tab = query_tab
     if 'tab' not in st.session_state:
         st.session_state.tab = 'Dashboard'
     page = st.session_state.tab
