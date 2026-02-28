@@ -12,7 +12,6 @@ st.set_page_config(page_title="Fintraa Budget Tracker", layout="wide")
 # --- THEME TOGGLE & MODERN XERO-INSPIRED CSS ---
 with open("assets/style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-    """, unsafe_allow_html=True)
 
 # --- MOCK DATA LOADER (Connects to your sheet logic) ---
 @st.cache_data
