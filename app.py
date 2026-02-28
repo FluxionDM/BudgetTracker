@@ -4,9 +4,64 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import gspread
+from google.oauth2.service_account import Credentials
 from datetime import datetime, timedelta
 
 # --- SETTINGS & THEME ---
+# --- GOOGLE SHEETS CONFIG ---
+SCOPE = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive"
+]
+CREDS = Credentials.from_service_account_file(
+    '.streamlit/secrets.json', scopes=SCOPE
+)
+gc = gspread.authorize(CREDS)
+
+MAIN_EMAIL = "fluxiondm2024@gmail.com"
+
+def get_or_create_folder(folder_name):
+    drive = gc.auth.service
+    from googleapiclient.discovery import build
+    drive_service = build('drive', 'v3', credentials=CREDS)
+    # Search for folder
+    results = drive_service.files().list(q=f"mimeType='application/vnd.google-apps.folder' and name='{folder_name}'",
+                                        spaces='drive', fields='files(id, name)').execute()
+    items = results.get('files', [])
+    if items:
+        folder_id = items[0]['id']
+    else:
+        file_metadata = {
+            'name': folder_name,
+            'mimeType': 'application/vnd.google-apps.folder'
+        }
+        folder = drive_service.files().create(body=file_metadata, fields='id').execute()
+        folder_id = folder.get('id')
+    return folder_id
+
+def get_monthly_sheet(month_name):
+    folder_id = get_or_create_folder('D-Budgets')
+    # Try to open, else create a new sheet for the month in the folder
+    try:
+        sh = gc.open(f"Budget_{month_name}")
+    except gspread.SpreadsheetNotFound:
+        sh = gc.create(f"Budget_{month_name}")
+        # Move sheet to folder
+        drive = gc.auth.service
+        from googleapiclient.discovery import build
+        drive_service = build('drive', 'v3', credentials=CREDS)
+        file_id = sh.id
+        drive_service.files().update(fileId=file_id, addParents=folder_id, removeParents=None, fields='id, parents').execute()
+        # Share with main email
+        sh.share(MAIN_EMAIL, perm_type='user', role='writer')
+    return sh
+
+def save_transaction_to_sheet(month_name, transaction_df):
+    sh = get_monthly_sheet(month_name)
+    worksheet = sh.sheet1
+    worksheet.clear()
+    worksheet.update([transaction_df.columns.values.tolist()] + transaction_df.values.tolist())
 st.set_page_config(page_title="Fintraa Budget Tracker", layout="wide")
 
 # --- THEME TOGGLE & MODERN XERO-INSPIRED CSS ---
@@ -16,6 +71,19 @@ with open("assets/style.css") as f:
 # --- MOCK DATA LOADER (Connects to your sheet logic) ---
 @st.cache_data
 def load_data():
+    # Try to load from Google Sheets for the current month
+    month_name = pd.Timestamp.today().strftime('%B %Y')
+    try:
+        sh = get_monthly_sheet(month_name)
+        worksheet = sh.sheet1
+        records = worksheet.get_all_records()
+        if records:
+            df = pd.DataFrame(records)
+            df['Date'] = pd.to_datetime(df['Date'])
+            return df
+    except Exception:
+        pass
+    # Fallback to mock data if sheet not found or empty
     data = {
         'Date': pd.to_datetime(['2024-03-01', '2024-03-02', '2024-03-05', '2024-03-10']),
         'Description': ['Salary', 'Rent', 'Groceries', 'Internet'],
@@ -113,6 +181,8 @@ if page == "Dashboard":
                             'Month': pd.to_datetime(t_date).strftime('%B %Y')
                         }])
                         st.session_state.df = pd.concat([st.session_state.df, new_transaction], ignore_index=True)
+                        # Save to Google Sheet for the month
+                        save_transaction_to_sheet(pd.to_datetime(t_date).strftime('%B %Y'), st.session_state.df)
                         st.success("Transaction Saved!")
                         st.session_state.show_form = False
                         st.rerun()
