@@ -13,25 +13,33 @@ html, body, .main {
     margin: 0 auto;
     max-width: 1200px;
 }
-.stSidebar {
-    background: #1a222b !important;
-    color: #eaf6fb !important;
-    }
-    .sidebar-content button, .sidebar-content .stButton>button {
-        background: white !important;
-        color: #1a222b !important;
-        border-radius: 10px;
-        font-weight: 600;
-        font-size: 18px;
-        margin-bottom: 16px;
-        width: 100%;
-        border: none;
-        box-shadow: 0 2px 8px rgba(44,62,80,0.10);
-        transition: background 0.2s;
-    }
-    .sidebar-content button:hover, .sidebar-content .stButton>button:hover {
-        background: #eaf6fb !important;
-        color: #00b2ff !important;
+.header-menu a {
+    font-weight: 600;
+    font-size: 20px;
+    color: #1a222b;
+    text-decoration: none;
+    margin: 0 32px;
+    transition: color 0.2s;
+}
+.header-menu a:hover {
+    color: #00b2ff;
+}
+.mobile-menu {
+    background: #f4f7fa;
+    border-radius: 12px;
+    padding: 16px 0;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-around;
+}
+.mobile-menu a {
+    color: #00b2ff;
+    font-weight: 700;
+    font-size: 18px;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 .stMetric {
     background: #fff;

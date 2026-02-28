@@ -32,24 +32,43 @@ df = st.session_state.df
 
 
 # --- Sidebar Navigation with Custom Button and Icon ---
-if 'sidebar_open' not in st.session_state:
-    st.session_state.sidebar_open = True
 
-def sidebar_icon():
-    if st.session_state.sidebar_open:
-        return "❌"  # X icon when open
-    else:
-        return "➡️"  # Arrow when closed
+# --- Responsive Header Menu (Desktop) and Mobile Menu ---
+import streamlit.components.v1 as components
+import sys
 
-sidebar_btn = st.sidebar.button(f"{sidebar_icon()} Menu", key="sidebar_toggle", help="Toggle menu")
-if sidebar_btn:
-    st.session_state.sidebar_open = not st.session_state.sidebar_open
+def is_mobile():
+    return st.session_state.get('is_mobile', False)
 
-sidebar_style = "background: white; color: #1a222b; border-radius: 10px; font-weight: 600; font-size: 18px; margin-bottom: 16px; width: 100%;"
-if st.session_state.sidebar_open:
-    page = st.sidebar.selectbox("Go to", ["Dashboard", "Transactions", "Archives"], key="nav_select")
+if 'is_mobile' not in st.session_state:
+    st.session_state.is_mobile = False
+    # Use JS to detect mobile and set session state
+    components.html("""
+    <script>
+    const isMobile = window.innerWidth < 600;
+    window.parent.postMessage({isMobile}, '*');
+    </script>
+    """, height=0)
+
+if not is_mobile():
+    # Desktop header menu
+    st.markdown("""
+    <div class='header-menu' style='display:flex;justify-content:center;align-items:center;margin-bottom:32px;'>
+        <a href='#' style='margin:0 32px;font-weight:600;font-size:20px;color:#1a222b;text-decoration:none;' onclick="window.location.hash='Dashboard'">Dashboard</a>
+        <a href='#' style='margin:0 32px;font-weight:600;font-size:20px;color:#1a222b;text-decoration:none;' onclick="window.location.hash='Transactions'">Transactions</a>
+        <a href='#' style='margin:0 32px;font-weight:600;font-size:20px;color:#1a222b;text-decoration:none;' onclick="window.location.hash='Archives'">Archives</a>
+    </div>
+    """, unsafe_allow_html=True)
+    page = st.selectbox("Go to", ["Dashboard", "Transactions", "Archives"], key="nav_select")
 else:
-    page = None
+    # Mobile menu
+    st.markdown("""
+    <div class='mobile-menu' style='background:#f4f7fa;border-radius:12px;padding:16px 0;margin-bottom:24px;display:flex;justify-content:space-around;'>
+        <a href='#' style='color:#00b2ff;font-weight:700;font-size:18px;text-decoration:none;display:flex;flex-direction:column;align-items:center;'>🏠<span>Dashboard</span></a>
+        <a href='#' style='color:#00b2ff;font-weight:700;font-size:18px;text-decoration:none;display:flex;flex-direction:column;align-items:center;'>📄<span>Transactions</span></a>
+        <a href='#' style='color:#00b2ff;font-weight:700;font-size:18px;text-decoration:none;display:flex;flex-direction:column;align-items:center;'>🗄️<span>Archives</span></a>
+    </div>
+    page = st.selectbox("Go to", ["Dashboard", "Transactions", "Archives"], key="nav_select_mobile")
 
 if page == "Dashboard":
     st.title("Monthly Overview")
@@ -138,6 +157,8 @@ elif page == "Transactions":
             filtered_df = filtered_df[filtered_df['Type'] == 'Income']
         elif filter_option == "Expenses Only":
             filtered_df = filtered_df[filtered_df['Type'].isin(['Expense', 'Pending'])]
+    # Format date as '28-Feb-2026'
+    filtered_df['Date'] = filtered_df['Date'].dt.strftime('%d-%b-%Y')
     st.dataframe(filtered_df.style.format({"Amount": "R {:,.2f}"}), width='stretch')
     st.header("Edit Transactions")
     edited_df = st.data_editor(df, num_rows="dynamic")
