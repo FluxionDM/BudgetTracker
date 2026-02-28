@@ -22,7 +22,6 @@ gc = gspread.authorize(CREDS)
 MAIN_EMAIL = "fluxiondm2024@gmail.com"
 
 def get_or_create_folder(folder_name):
-    drive = gc.auth.service
     from googleapiclient.discovery import build
     drive_service = build('drive', 'v3', credentials=CREDS)
     # Search for folder
@@ -59,9 +58,37 @@ def get_monthly_sheet(month_name):
 
 def save_transaction_to_sheet(month_name, transaction_df):
     sh = get_monthly_sheet(month_name)
+    # --- Transactions worksheet ---
     worksheet = sh.sheet1
     worksheet.clear()
     worksheet.update([transaction_df.columns.values.tolist()] + transaction_df.values.tolist())
+
+    # --- Dashboard Summary worksheet ---
+    try:
+        dashboard_ws = sh.worksheet('Dashboard')
+    except gspread.WorksheetNotFound:
+        dashboard_ws = sh.add_worksheet(title='Dashboard', rows=20, cols=6)
+    dashboard_ws.clear()
+    total_inc = transaction_df[transaction_df['Type'] == 'Income']['Amount'].sum()
+    total_exp = transaction_df[transaction_df['Type'] == 'Expense']['Amount'].sum()
+    pending = transaction_df[transaction_df['Type'] == 'Pending']['Amount'].sum()
+    dashboard_data = [
+        ['Metric', 'Value'],
+        ['Total Income', total_inc],
+        ['Total Expenses', total_exp],
+        ['Pending (Debit Orders)', pending]
+    ]
+    dashboard_ws.update(dashboard_data)
+
+    # --- Category Breakdown worksheet ---
+    try:
+        cat_ws = sh.worksheet('Category Breakdown')
+    except gspread.WorksheetNotFound:
+        cat_ws = sh.add_worksheet(title='Category Breakdown', rows=50, cols=3)
+    cat_ws.clear()
+    cat_df = transaction_df[transaction_df['Type'] != 'Income'].groupby('Category', as_index=False)['Amount'].sum()
+    cat_data = [['Category', 'Amount']] + cat_df.values.tolist()
+    cat_ws.update(cat_data)
 st.set_page_config(page_title="Fintraa Budget Tracker", layout="wide")
 
 # --- THEME TOGGLE & MODERN XERO-INSPIRED CSS ---
