@@ -68,6 +68,7 @@ else:
         <a href='#' style='color:#00b2ff;font-weight:700;font-size:18px;text-decoration:none;display:flex;flex-direction:column;align-items:center;'>📄<span>Transactions</span></a>
         <a href='#' style='color:#00b2ff;font-weight:700;font-size:18px;text-decoration:none;display:flex;flex-direction:column;align-items:center;'>🗄️<span>Archives</span></a>
     </div>
+    """, unsafe_allow_html=True)
     page = st.selectbox("Go to", ["Dashboard", "Transactions", "Archives"], key="nav_select_mobile")
 
 if page == "Dashboard":
