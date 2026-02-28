@@ -2,3 +2,6 @@ streamlit
 pandas
 plotly
 st-gsheets-connection
+gspread
+google-auth
+google-api-python-client
