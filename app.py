@@ -54,22 +54,36 @@ if not is_mobile():
     # Desktop header menu
     st.markdown("""
     <div class='header-menu' style='display:flex;justify-content:center;align-items:center;margin-bottom:32px;'>
-        <a href='#' style='margin:0 32px;font-weight:600;font-size:20px;color:#1a222b;text-decoration:none;' onclick="window.location.hash='Dashboard'">Dashboard</a>
-        <a href='#' style='margin:0 32px;font-weight:600;font-size:20px;color:#1a222b;text-decoration:none;' onclick="window.location.hash='Transactions'">Transactions</a>
-        <a href='#' style='margin:0 32px;font-weight:600;font-size:20px;color:#1a222b;text-decoration:none;' onclick="window.location.hash='Archives'">Archives</a>
+        <a href='#' id='dashboard-link' style='margin:0 32px;font-weight:600;font-size:20px;color:#1a222b;text-decoration:none;'>Dashboard</a>
+        <a href='#' id='transactions-link' style='margin:0 32px;font-weight:600;font-size:20px;color:#1a222b;text-decoration:none;'>Transactions</a>
+        <a href='#' id='archives-link' style='margin:0 32px;font-weight:600;font-size:20px;color:#1a222b;text-decoration:none;'>Archives</a>
     </div>
+    <script>
+    document.getElementById('dashboard-link').onclick = function() { window.parent.postMessage({tab: 'Dashboard'}, '*'); return false; };
+    document.getElementById('transactions-link').onclick = function() { window.parent.postMessage({tab: 'Transactions'}, '*'); return false; };
+    document.getElementById('archives-link').onclick = function() { window.parent.postMessage({tab: 'Archives'}, '*'); return false; };
+    </script>
     """, unsafe_allow_html=True)
-    page = st.selectbox("Go to", ["Dashboard", "Transactions", "Archives"], key="nav_select")
+    if 'tab' not in st.session_state:
+        st.session_state.tab = 'Dashboard'
+    page = st.session_state.tab
 else:
-    # Mobile menu
-    st.markdown("""
-    <div class='mobile-menu' style='background:#f4f7fa;border-radius:12px;padding:16px 0;margin-bottom:24px;display:flex;justify-content:space-around;'>
-        <a href='#' style='color:#00b2ff;font-weight:700;font-size:18px;text-decoration:none;display:flex;flex-direction:column;align-items:center;'>🏠<span>Dashboard</span></a>
-        <a href='#' style='color:#00b2ff;font-weight:700;font-size:18px;text-decoration:none;display:flex;flex-direction:column;align-items:center;'>📄<span>Transactions</span></a>
-        <a href='#' style='color:#00b2ff;font-weight:700;font-size:18px;text-decoration:none;display:flex;flex-direction:column;align-items:center;'>🗄️<span>Archives</span></a>
+    # Mobile sidebar menu
+    st.sidebar.markdown("""
+    <div class='mobile-sidebar-menu' style='background:#f4f7fa;border-radius:12px;padding:16px 0;margin-bottom:24px;'>
+        <a href='#' id='sidebar-dashboard-link' style='color:#00b2ff;font-weight:700;font-size:18px;text-decoration:none;display:block;padding:12px 0;'>🏠 Dashboard</a>
+        <a href='#' id='sidebar-transactions-link' style='color:#00b2ff;font-weight:700;font-size:18px;text-decoration:none;display:block;padding:12px 0;'>📄 Transactions</a>
+        <a href='#' id='sidebar-archives-link' style='color:#00b2ff;font-weight:700;font-size:18px;text-decoration:none;display:block;padding:12px 0;'>🗄️ Archives</a>
     </div>
+    <script>
+    document.getElementById('sidebar-dashboard-link').onclick = function() { window.parent.postMessage({tab: 'Dashboard'}, '*'); return false; };
+    document.getElementById('sidebar-transactions-link').onclick = function() { window.parent.postMessage({tab: 'Transactions'}, '*'); return false; };
+    document.getElementById('sidebar-archives-link').onclick = function() { window.parent.postMessage({tab: 'Archives'}, '*'); return false; };
+    </script>
     """, unsafe_allow_html=True)
-    page = st.selectbox("Go to", ["Dashboard", "Transactions", "Archives"], key="nav_select_mobile")
+    if 'tab' not in st.session_state:
+        st.session_state.tab = 'Dashboard'
+    page = st.session_state.tab
 
 if page == "Dashboard":
     st.title("Monthly Overview")
