@@ -7,7 +7,7 @@ import plotly.express as px
 from datetime import datetime, timedelta
 
 # --- SETTINGS & THEME ---
-st.set_page_config(page_title="ZAR Budget Tracker", layout="wide")
+st.set_page_config(page_title="Fintraa Budget Tracker", layout="wide")
 
 # --- THEME TOGGLE & MODERN XERO-INSPIRED CSS ---
 theme = st.sidebar.selectbox("Theme", ["Light", "Dark"], index=0)
@@ -63,10 +63,10 @@ if 'df' not in st.session_state:
     st.session_state.df = load_data()
 df = st.session_state.df
 
-st.sidebar.title("💰 Budget Menu")
-page = st.sidebar.radio("Go to", ["Home / Dashboard", "Transactions", "Archives"])
+st.sidebar.title("Menu")
+page = st.sidebar.selectbox("Go to", ["Dashboard", "Transactions", "Archives"])
 
-if page == "Home / Dashboard":
+if page == "Dashboard":
     st.title("Monthly Overview")
     if 'show_form' not in st.session_state:
         st.session_state.show_form = False
@@ -122,14 +122,11 @@ if page == "Home / Dashboard":
     with c2:
         fig_bar = px.bar(df, x='Date', y='Amount', color='Type', title="Daily Cash Flow")
         st.plotly_chart(fig_bar, width='stretch')
-    st.header("Transactions by Category")
-    for category in sorted(df['Category'].unique()):
-        with st.expander(f"**{category}**"):
-            category_df = df[df['Category'] == category]
-            st.dataframe(category_df.style.format({"Amount": "R {:,.2f}"}), width='stretch')
-            if not category_df.empty:
-                fig_cat = px.bar(category_df, x='Date', y='Amount', color='Type', title=f"{category} Transactions")
-                st.plotly_chart(fig_cat, width='stretch')
+    # Category breakdown vertical bar chart
+    st.header("Category Breakdown")
+    cat_df = df[df['Type'] != 'Income'].groupby('Category', as_index=False)['Amount'].sum()
+    fig_cat_breakdown = px.bar(cat_df, x='Category', y='Amount', title="Expenses by Category", orientation='v', color='Category', text='Amount')
+    st.plotly_chart(fig_cat_breakdown, width='stretch')
 elif page == "Transactions":
     st.title("Transaction History")
     filter_option = st.selectbox(
