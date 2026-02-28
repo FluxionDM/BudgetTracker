@@ -10,40 +10,8 @@ from datetime import datetime, timedelta
 st.set_page_config(page_title="Fintraa Budget Tracker", layout="wide")
 
 # --- THEME TOGGLE & MODERN XERO-INSPIRED CSS ---
-theme = st.sidebar.selectbox("Theme", ["Light", "Dark"], index=0)
-if theme == "Light":
-    st.markdown("""
-        <style>
-        body, .main { background-color: #f4f7fa; color: #222; }
-        .stMetric { background: #fff; padding: 18px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
-        .stButton>button, .stDownloadButton>button {
-            border-radius: 8px; background: linear-gradient(90deg,#2ec4b6 0,#00b2ff 100%); color: #fff; font-weight: 600; border: none; box-shadow: 0 1px 4px rgba(0,0,0,0.08); transition: background 0.2s;
-        }
-        .stButton>button:hover, .stDownloadButton>button:hover { background: linear-gradient(90deg,#00b2ff 0,#2ec4b6 100%); }
-        .stExpander { background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .stDataFrame, .stTable { background: #fff; border-radius: 10px; }
-        @media (max-width: 600px) {
-            .stMetric, .stExpander, .stDataFrame, .stTable { padding: 8px; font-size: 15px; }
-            .stButton>button, .stDownloadButton>button { font-size: 15px; }
-        }
-        </style>
-    """, unsafe_allow_html=True)
-else:
-    st.markdown("""
-        <style>
-        body, .main { background: #1a222b; color: #eaf6fb; }
-        .stMetric { background: #232e3c; color: #eaf6fb; padding: 18px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
-        .stButton>button, .stDownloadButton>button {
-            border-radius: 8px; background: linear-gradient(90deg,#00b2ff 0,#2ec4b6 100%); color: #fff; font-weight: 600; border: none; box-shadow: 0 1px 4px rgba(0,0,0,0.12); transition: background 0.2s;
-        }
-        .stButton>button:hover, .stDownloadButton>button:hover { background: linear-gradient(90deg,#2ec4b6 0,#00b2ff 100%); }
-        .stExpander { background: #232e3c; color: #eaf6fb; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
-        .stDataFrame, .stTable { background: #232e3c; color: #eaf6fb; border-radius: 10px; }
-        @media (max-width: 600px) {
-            .stMetric, .stExpander, .stDataFrame, .stTable { padding: 8px; font-size: 15px; }
-            .stButton>button, .stDownloadButton>button { font-size: 15px; }
-        }
-        </style>
+with open("assets/style.css") as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
     """, unsafe_allow_html=True)
 
 # --- MOCK DATA LOADER (Connects to your sheet logic) ---

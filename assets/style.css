@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+html, body, .main {
+    font-family: 'Inter', 'Montserrat', 'Open Sans', Arial, sans-serif !important;
+    background: url('https://www.fluxiondm.co.za/hubfs/Liquid%20Background.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: #222;
+}
+.stApp {
+    background: rgba(244,247,250,0.92);
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(44, 62, 80, 0.10);
+    padding: 32px 0 32px 0;
+    margin: 0 auto;
+    max-width: 1200px;
+}
+.stSidebar {
+    background: #1a222b !important;
+    color: #eaf6fb !important;
+}
+.stMetric {
+    background: #fff;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(44,62,80,0.08);
+    margin-bottom: 18px;
+}
+.stButton>button, .stDownloadButton>button {
+    border-radius: 10px;
+    background: linear-gradient(90deg,#2ec4b6 0,#00b2ff 100%);
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 2px 8px rgba(44,62,80,0.10);
+    padding: 12px 28px;
+    font-size: 18px;
+    transition: background 0.2s;
+}
+.stButton>button:hover, .stDownloadButton>button:hover {
+    background: linear-gradient(90deg,#00b2ff 0,#2ec4b6 100%);
+}
+.stExpander, .stDataFrame, .stTable {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(44,62,80,0.07);
+    margin-bottom: 18px;
+}
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: #1a222b;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+.stHeader {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #00b2ff;
+    margin-bottom: 0.5em;
+}
+@media (max-width: 600px) {
+    .stApp { padding: 8px 0 8px 0; }
+    .stMetric, .stExpander, .stDataFrame, .stTable { padding: 8px; font-size: 15px; }
+    .stButton>button, .stDownloadButton>button { font-size: 15px; padding: 10px 18px; }
+}
