@@ -16,6 +16,22 @@ html, body, .main {
 .stSidebar {
     background: #1a222b !important;
     color: #eaf6fb !important;
+    }
+    .sidebar-content button, .sidebar-content .stButton>button {
+        background: white !important;
+        color: #1a222b !important;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 18px;
+        margin-bottom: 16px;
+        width: 100%;
+        border: none;
+        box-shadow: 0 2px 8px rgba(44,62,80,0.10);
+        transition: background 0.2s;
+    }
+    .sidebar-content button:hover, .sidebar-content .stButton>button:hover {
+        background: #eaf6fb !important;
+        color: #00b2ff !important;
 }
 .stMetric {
     background: #fff;

@@ -30,8 +30,26 @@ if 'df' not in st.session_state:
     st.session_state.df = load_data()
 df = st.session_state.df
 
-st.sidebar.title("Menu")
-page = st.sidebar.selectbox("Go to", ["Dashboard", "Transactions", "Archives"])
+
+# --- Sidebar Navigation with Custom Button and Icon ---
+if 'sidebar_open' not in st.session_state:
+    st.session_state.sidebar_open = True
+
+def sidebar_icon():
+    if st.session_state.sidebar_open:
+        return "❌"  # X icon when open
+    else:
+        return "➡️"  # Arrow when closed
+
+sidebar_btn = st.sidebar.button(f"{sidebar_icon()} Menu", key="sidebar_toggle", help="Toggle menu")
+if sidebar_btn:
+    st.session_state.sidebar_open = not st.session_state.sidebar_open
+
+sidebar_style = "background: white; color: #1a222b; border-radius: 10px; font-weight: 600; font-size: 18px; margin-bottom: 16px; width: 100%;"
+if st.session_state.sidebar_open:
+    page = st.sidebar.selectbox("Go to", ["Dashboard", "Transactions", "Archives"], key="nav_select")
+else:
+    page = None
 
 if page == "Dashboard":
     st.title("Monthly Overview")
@@ -130,8 +148,10 @@ elif page == "Transactions":
 elif page == "Archives":
     st.title("Budget Archives")
     selected_month = st.selectbox("Select Previous Month", df['Month'].unique())
-    archive_data = df[df['Month'] == selected_month]
+    archive_data = df[df['Month'] == selected_month].copy()
     st.write(f"Showing data for: {selected_month}")
+    # Format date as '28-Feb-2026'
+    archive_data['Date'] = archive_data['Date'].dt.strftime('%d-%b-%Y')
     st.table(archive_data)
     @st.cache_data
     def convert_df(df_to_save):
