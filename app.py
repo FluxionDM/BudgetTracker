@@ -15,8 +15,8 @@ SCOPE = [
     "https://www.googleapis.com/auth/drive"
 ]
 # Load service account info from Streamlit secrets
-service_account_info = json.loads(st.secrets["gcp_service_account"])
-CREDS = Credentials.from_service_account_info(service_account_info, scopes=SCOPE)
+# The secret is stored in TOML format and Streamlit parses it into a dictionary
+CREDS = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=SCOPE)
 gc = gspread.authorize(CREDS)
 
 MAIN_EMAIL = "fluxiondm2024@gmail.com"
