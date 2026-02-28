@@ -52,34 +52,31 @@ if 'is_mobile' not in st.session_state:
 
 if not is_mobile():
     # Desktop header menu
-    st.markdown("""
-    <div class='header-menu' style='display:flex;justify-content:center;align-items:center;margin-bottom:32px;'>
-        <a href='?tab=Dashboard' style='margin:0 32px;font-weight:600;font-size:20px;color:#1a222b;text-decoration:none;'>🏠 Dashboard</a>
-        <a href='?tab=Transactions' style='margin:0 32px;font-weight:600;font-size:20px;color:#1a222b;text-decoration:none;'>📄 Transactions</a>
-        <a href='?tab=Archives' style='margin:0 32px;font-weight:600;font-size:20px;color:#1a222b;text-decoration:none;'>🗄️ Archives</a>
-    </div>
-    """, unsafe_allow_html=True)
-    import streamlit as st
-    query_tab = st.experimental_get_query_params().get('tab', [None])[0]
-    if query_tab:
-        st.session_state.tab = query_tab
+    col1, col2, col3 = st.columns([1,1,1])
     if 'tab' not in st.session_state:
         st.session_state.tab = 'Dashboard'
+    with col1:
+        if st.button('🏠 Dashboard'):
+            st.session_state.tab = 'Dashboard'
+    with col2:
+        if st.button('📄 Transactions'):
+            st.session_state.tab = 'Transactions'
+    with col3:
+        if st.button('🗄️ Archives'):
+            st.session_state.tab = 'Archives'
     page = st.session_state.tab
 else:
     # Mobile sidebar menu
-    st.sidebar.markdown("""
-    <div class='mobile-sidebar-menu' style='background:#f4f7fa;border-radius:12px;padding:16px 0;margin-bottom:24px;'>
-        <a href='?tab=Dashboard' style='color:#00b2ff;font-weight:700;font-size:18px;text-decoration:none;display:block;padding:12px 0;'>🏠 Dashboard</a>
-        <a href='?tab=Transactions' style='color:#00b2ff;font-weight:700;font-size:18px;text-decoration:none;display:block;padding:12px 0;'>📄 Transactions</a>
-        <a href='?tab=Archives' style='color:#00b2ff;font-weight:700;font-size:18px;text-decoration:none;display:block;padding:12px 0;'>🗄️ Archives</a>
-    </div>
-    """, unsafe_allow_html=True)
-    query_tab = st.experimental_get_query_params().get('tab', [None])[0]
-    if query_tab:
-        st.session_state.tab = query_tab
     if 'tab' not in st.session_state:
         st.session_state.tab = 'Dashboard'
+    st.sidebar.markdown("<div class='mobile-sidebar-menu' style='background:#f4f7fa;border-radius:12px;padding:16px 0;margin-bottom:24px;'>", unsafe_allow_html=True)
+    if st.sidebar.button('🏠 Dashboard'):
+        st.session_state.tab = 'Dashboard'
+    if st.sidebar.button('📄 Transactions'):
+        st.session_state.tab = 'Transactions'
+    if st.sidebar.button('🗄️ Archives'):
+        st.session_state.tab = 'Archives'
+    st.sidebar.markdown("</div>", unsafe_allow_html=True)
     page = st.session_state.tab
 
 if page == "Dashboard":
