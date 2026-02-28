@@ -7,16 +7,16 @@ import plotly.express as px
 import gspread
 from google.oauth2.service_account import Credentials
 from datetime import datetime, timedelta
+import json
 
 # --- SETTINGS & THEME ---
-# --- GOOGLE SHEETS CONFIG ---
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive"
 ]
-CREDS = Credentials.from_service_account_file(
-    '.streamlit/secrets.json', scopes=SCOPE
-)
+# Load service account info from Streamlit secrets
+service_account_info = json.loads(st.secrets["gcp_service_account"])
+CREDS = Credentials.from_service_account_info(service_account_info, scopes=SCOPE)
 gc = gspread.authorize(CREDS)
 
 MAIN_EMAIL = "fluxiondm2024@gmail.com"
